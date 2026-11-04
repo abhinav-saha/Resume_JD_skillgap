@@ -3,32 +3,108 @@ import "../style/home.scss";
 import { useInterview } from "../hooks/useInterview.js";
 import { useNavigate } from "react-router";
 
+const progressSteps = [
+  { label: "Analyzing resume & job description", doneAt: 30 },
+  { label: "Generating interview questions", doneAt: 55 },
+  { label: "Building your preparation plan", doneAt: 85 },
+  { label: "Saving your interview report", doneAt: 100 },
+];
+
 const Home = () => {
-  const { loading, generateReport, reports } = useInterview();
+  const { loading, progress, stage, generateReport, reports } = useInterview();
+
   const [jobDescription, setJobDescription] = useState("");
   const [selfDescription, setSelfDescription] = useState("");
   const [resumeFile, setResumeFile] = useState(null);
-  const resumeInputRef = useRef();
 
+  const resumeInputRef = useRef();
   const navigate = useNavigate();
 
   const handleGenerateReport = async () => {
-    const resumeFile = resumeInputRef.current.files[0];
-    const data = await generateReport({
-      jobDescription,
-      selfDescription,
-      resumeFile,
-    });
-    navigate(`/interview/${data._id}`);
+    const selectedResume = resumeInputRef.current?.files?.[0] || resumeFile;
+
+    if (!jobDescription.trim()) {
+      alert("Please enter a job description.");
+      return;
+    }
+
+    if (!selectedResume) {
+      alert("Please upload your resume in PDF format.");
+      return;
+    }
+
+    if (
+      selectedResume.type !== "application/pdf" &&
+      !selectedResume.name.toLowerCase().endsWith(".pdf")
+    ) {
+      alert("Only PDF resumes are supported currently.");
+      return;
+    }
+
+    try {
+      const data = await generateReport({
+        jobDescription,
+        selfDescription,
+        resumeFile: selectedResume,
+      });
+
+      if (data?._id) {
+        navigate(`/interview/${data._id}`);
+      }
+    } catch (error) {
+      alert(
+        error.response?.data?.message ||
+          error.message ||
+          "Failed to generate interview report.",
+      );
+    }
   };
 
-  if (loading) {
+  const displayedProgress = Math.min(progress || 0, 100);
+
+  const activeStepIndex = progressSteps.findIndex(
+    (step) => displayedProgress < step.doneAt,
+  );
+
+
+if (loading) {
     return (
-      <main className="loading-screen">
-        <h1>Loading your interview plan...</h1>
-      </main>
-    );
-  }
+        <main className="loading-screen">
+            <div className="loading-content">
+
+                <h1 className="loading-title">
+                    Loading
+                    <span className="loading-dots">
+                        <span>.</span>
+                        <span>.</span>
+                        <span>.</span>
+                        <span>.</span>
+                        <span>.</span>
+                    </span>
+                </h1>
+
+                <div className="loading-bar">
+                    <div
+                        className="loading-bar__fill"
+                        style={{ width: `${displayedProgress}%` }}
+                    />
+                </div>
+
+                <div className="loading-stage">
+                    {displayedProgress >= 100 ? (
+                        <span className="stage-check">✓</span>
+                    ) : (
+                        <span className="stage-spinner" />
+                    )}
+
+                    <span>{stage}</span>
+                </div>
+
+            </div>
+        </main>
+    )
+}
+
 
   return (
     <div className="home-page">
@@ -37,6 +113,7 @@ const Home = () => {
         <h1>
           Create Your Custom <span className="highlight">Interview Plan</span>
         </h1>
+
         <p>
           Let our AI analyze the job requirements and your unique profile to
           build a winning strategy.
@@ -65,16 +142,17 @@ const Home = () => {
                   <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
                 </svg>
               </span>
+
               <h2>Target Job Description</h2>
               <span className="badge badge--required">Required</span>
             </div>
+
             <textarea
-              onChange={(e) => {
-                setJobDescription(e.target.value);
-              }}
+              onChange={(e) => setJobDescription(e.target.value)}
               className="panel__textarea"
-              placeholder={`Paste the full job description here...\ne.g. 'Senior Frontend Engineer at Google requires proficiency in React, TypeScript, and large-scale system design...'`}
+              placeholder={`Paste the full job description here...\ne.g. 'Software Engineer at Google requires proficiency in React, Node.js and system design...'`}
               maxLength={5000}
+              value={jobDescription}
             />
           </div>
 
@@ -100,93 +178,94 @@ const Home = () => {
                   <circle cx="12" cy="7" r="4" />
                 </svg>
               </span>
+
               <h2>Your Profile</h2>
             </div>
-{/* Upload Resume */}
-<div className="upload-section">
-  <label className="section-label">
-    Upload Resume
-    <span className="badge badge--best">Best Results</span>
-  </label>
 
-  <label
-    className={`dropzone ${resumeFile ? "dropzone--uploaded" : ""}`}
-    htmlFor="resume"
-  >
-    <span className="dropzone__icon">
-      {resumeFile ? (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="28"
-          height="28"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <polyline points="20 6 9 17 4 12" />
-        </svg>
-      ) : (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="28"
-          height="28"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <polyline points="16 16 12 12 8 16" />
-          <line x1="12" y1="12" x2="12" y2="21" />
-          <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" />
-        </svg>
-      )}
-    </span>
+            {/* Upload Resume */}
+            <div className="upload-section">
+              <label className="section-label">
+                Upload Resume
+                <span className="badge badge--best">Required</span>
+              </label>
 
-    <p className="dropzone__title">
-      {resumeFile
-        ? "Resume uploaded successfully"
-        : "Click to upload or drag & drop"}
-    </p>
+              <label
+                className={`dropzone ${resumeFile ? "dropzone--uploaded" : ""}`}
+                htmlFor="resume"
+              >
+                <span className="dropzone__icon">
+                  {resumeFile ? (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="28"
+                      height="28"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  ) : (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="28"
+                      height="28"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="16 16 12 12 8 16" />
+                      <line x1="12" y1="12" x2="12" y2="21" />
+                      <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" />
+                    </svg>
+                  )}
+                </span>
 
-    <p className="dropzone__subtitle">
-      {resumeFile ? resumeFile.name : "PDF or DOCX (Max 5MB)"}
-    </p>
+                <p className="dropzone__title">
+                  {resumeFile
+                    ? "Resume uploaded successfully"
+                    : "Click to upload or drag & drop"}
+                </p>
 
-    <input
-      ref={resumeInputRef}
-      hidden
-      type="file"
-      id="resume"
-      name="resume"
-      accept=".pdf,.docx"
-      onChange={(e) => setResumeFile(e.target.files[0])}
-    />
-  </label>
-</div>
+                <p className="dropzone__subtitle">
+                  {resumeFile ? resumeFile.name : "PDF only (Max 3MB)"}
+                </p>
 
-            {/* OR Divider */}
-            <div className="or-divider">
-              <span>OR</span>
+                <input
+                  ref={resumeInputRef}
+                  hidden
+                  type="file"
+                  id="resume"
+                  name="resume"
+                  accept=".pdf,application/pdf"
+                  onChange={(e) => setResumeFile(e.target.files[0] || null)}
+                />
+              </label>
             </div>
 
-            {/* Quick Self-Description */}
+            {/* Optional Self Description */}
+            <div className="or-divider">
+              <span>OPTIONAL EXTRA CONTEXT</span>
+            </div>
+
             <div className="self-description">
               <label className="section-label" htmlFor="selfDescription">
                 Quick Self-Description
               </label>
+
               <textarea
-                onChange={(e) => {
-                  setSelfDescription(e.target.value);
-                }}
+                onChange={(e) => setSelfDescription(e.target.value)}
                 id="selfDescription"
                 name="selfDescription"
                 className="panel__textarea panel__textarea--short"
-                placeholder="Briefly describe your experience, key skills, and years of experience if you don't have a resume handy..."
+                placeholder="Briefly describe your experience, key skills, and years of experience..."
+                value={selfDescription}
               />
             </div>
 
@@ -219,10 +298,11 @@ const Home = () => {
                   />
                 </svg>
               </span>
+
               <p>
-                Either a <strong>Resume</strong> or a{" "}
-                <strong>Self Description</strong> is required to generate a
-                personalized plan.
+                A <strong>PDF Resume</strong> and{" "}
+                <strong>Job Description</strong>
+                are required. Self-description is optional.
               </p>
             </div>
           </div>
@@ -233,6 +313,7 @@ const Home = () => {
           <span className="footer-info">
             AI-Powered Strategy Generation &bull; Approx 30s
           </span>
+
           <button onClick={handleGenerateReport} className="generate-btn">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -248,10 +329,11 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Recent Reports List */}
+      {/* Recent Reports */}
       {reports.length > 0 && (
         <section className="recent-reports">
           <h2>My Recent Interview Plans</h2>
+
           <ul className="reports-list">
             {reports.map((report) => (
               <li
@@ -260,11 +342,19 @@ const Home = () => {
                 onClick={() => navigate(`/interview/${report._id}`)}
               >
                 <h3>{report.title || "Untitled Position"}</h3>
+
                 <p className="report-meta">
                   Generated on {new Date(report.createdAt).toLocaleDateString()}
                 </p>
+
                 <p
-                  className={`match-score ${report.matchScore >= 80 ? "score--high" : report.matchScore >= 60 ? "score--mid" : "score--low"}`}
+                  className={`match-score ${
+                    report.matchScore >= 80
+                      ? "score--high"
+                      : report.matchScore >= 60
+                        ? "score--mid"
+                        : "score--low"
+                  }`}
                 >
                   Match Score: {report.matchScore}%
                 </p>

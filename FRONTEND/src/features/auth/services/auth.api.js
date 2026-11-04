@@ -2,16 +2,14 @@ import axios from "axios"
 
 
 const api = axios.create({
-    baseURL: "https://resume-jd-skillgap.onrender.com",
+   baseURL: "https://resume-jd-skillgap.onrender.com",
     withCredentials: true
 })
 
 export async function register({ username, email, password }) {
 
     try {
-        const response = await api.post('/api/auth/register', {
-            username, email, password
-        })
+        const response = await api.post('/api/auth/register', {username, email, password })
 
         return response.data
 

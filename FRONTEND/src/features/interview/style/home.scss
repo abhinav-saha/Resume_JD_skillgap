@@ -1,3 +1,4 @@
+
 // ── Variables ────────────────────────────────────────────────────────────────
 $bg-page:        #0d1117;
 $bg-card:        #161b22;
@@ -54,7 +55,7 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
     }
 }
 
-// ── Main Card ─────────────────────────────────────────────────────────────────
+// ── Main Card ────────────────────────────────────────────────────────────────
 .interview-card {
     width: 100%;
     max-width: 900px;
@@ -82,7 +83,7 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
     }
 }
 
-// ── Panels ────────────────────────────────────────────────────────────────────
+// ── Panels ───────────────────────────────────────────────────────────────────
 .panel-divider {
     width: 1px;
     background-color: $border-color;
@@ -162,7 +163,7 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
     }
 }
 
-// ── Badges ────────────────────────────────────────────────────────────────────
+// ── Badges ───────────────────────────────────────────────────────────────────
 .badge {
     font-size: 0.7rem;
     font-weight: 600;
@@ -184,7 +185,7 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
     }
 }
 
-// ── Section Label ─────────────────────────────────────────────────────────────
+// ── Section Label ────────────────────────────────────────────────────────────
 .section-label {
     display: flex;
     align-items: center;
@@ -195,7 +196,7 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
     margin-bottom: 0.25rem;
 }
 
-// ── Dropzone ──────────────────────────────────────────────────────────────────
+// ── Dropzone ─────────────────────────────────────────────────────────────────
 .upload-section {
     display: flex;
     flex-direction: column;
@@ -239,7 +240,7 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
     }
 }
 
-// ── OR Divider ────────────────────────────────────────────────────────────────
+// ── OR Divider ───────────────────────────────────────────────────────────────
 .or-divider {
     display: flex;
     align-items: center;
@@ -260,14 +261,14 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
     }
 }
 
-// ── Self Description ──────────────────────────────────────────────────────────
+// ── Self Description ─────────────────────────────────────────────────────────
 .self-description {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
 }
 
-// ── Info Box ──────────────────────────────────────────────────────────────────
+// ── Info Box ─────────────────────────────────────────────────────────────────
 .info-box {
     display: flex;
     align-items: flex-start;
@@ -295,7 +296,7 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
     }
 }
 
-// ── Generate Button ───────────────────────────────────────────────────────────
+// ── Generate Button ──────────────────────────────────────────────────────────
 .generate-btn {
     display: flex;
     align-items: center;
@@ -320,19 +321,20 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
     }
 }
 
-.recent-reports{
+// ── Recent Reports ────────────────────────────────────────────────────────────
+.recent-reports {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
     width: 100%;
     max-width: 900px;
 
-    .reports-list{
+    .reports-list {
         display: flex;
         gap: 0.75rem;
         flex-wrap: wrap;
 
-        .report-item{
+        .report-item {
             background-color: $bg-card;
             border: 1px solid $border-color;
             border-radius: 0.5rem;
@@ -354,6 +356,7 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
     }
 }
 
+// ── Uploaded Dropzone ────────────────────────────────────────────────────────
 .dropzone--uploaded {
     border-color: #22c55e;
     background-color: rgba(34, 197, 94, 0.08);
@@ -366,7 +369,6 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
         color: #22c55e;
     }
 }
-
 
 // ── Page Footer ───────────────────────────────────────────────────────────────
 .page-footer {
@@ -382,5 +384,174 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
         &:hover {
             color: $text-primary;
         }
+    }
+}
+
+// ── Loading Screen ────────────────────────────────────────────────────────────
+.loading-screen {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background-color: $bg-page;
+    color: $text-primary;
+    font-family: $font-stack;
+}
+
+.loading-content {
+    width: min(100%, 460px);
+    text-align: center;
+}
+
+// ── Loading Title + Blinking Dots ─────────────────────────────────────────────
+.loading-title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    font-weight: 650;
+    margin: 0 0 2rem;
+    color: $text-primary;
+}
+
+.loading-dots {
+    display: inline-flex;
+    margin-left: 5px;
+    color: $accent;
+
+    span {
+        animation: dotBlink 1.2s infinite;
+        opacity: 0.15;
+
+        &:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        &:nth-child(3) {
+            animation-delay: 0.30s;
+        }
+
+        &:nth-child(4) {
+            animation-delay: 0.45s;
+        }
+
+        &:nth-child(5) {
+            animation-delay: 0.60s;
+        }
+    }
+}
+
+@keyframes dotBlink {
+    0%, 60%, 100% {
+        opacity: 0.15;
+    }
+
+    30% {
+        opacity: 1;
+    }
+}
+
+// ── Thick Progress Bar ────────────────────────────────────────────────────────
+.loading-bar {
+    width: 100%;
+    height: 14px;
+    border-radius: 20px;
+    overflow: hidden;
+    background-color: $border-color;
+
+    &__fill {
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, $accent, $accent-alt);
+        box-shadow: 0 0 12px rgba($accent, 0.35);
+        transition: width 600ms ease;
+    }
+}
+
+// ── Current Loading Stage ─────────────────────────────────────────────────────
+.loading-stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 11px;
+    margin-top: 25px;
+    color: $text-primary;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.stage-spinner {
+    width: 17px;
+    height: 17px;
+    border: 2px solid rgba($accent, 0.25);
+    border-top-color: $accent;
+    border-radius: 50%;
+    animation: stageSpin 0.8s linear infinite;
+    flex-shrink: 0;
+}
+
+.stage-check {
+    color: #22c55e;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+@keyframes stageSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+@media (max-width: 768px) {
+    .home-page {
+        padding: 2rem 1rem;
+    }
+
+    .page-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .interview-card__body {
+        flex-direction: column;
+        min-height: auto;
+    }
+
+    .panel {
+        padding: 1.25rem;
+
+        &__textarea {
+            min-height: 220px;
+        }
+    }
+
+    .interview-card__footer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+
+        .generate-btn {
+            justify-content: center;
+        }
+    }
+
+    .loading-title {
+        font-size: 1.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .loading-content {
+        width: 100%;
+    }
+
+    .loading-stage {
+        font-size: 0.85rem;
     }
 }
